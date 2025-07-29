@@ -8,9 +8,61 @@ import pandas as pd
 # Initialize the stock analyzer
 analyzer = StockAnalyzer()
 
-# Initialize Dash app with Bootstrap theme
+# Initialize Dash app with Bootstrap theme and mobile optimization
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Stock Market Analysis Dashboard"
+
+# Add mobile-optimized meta tags
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+        <style>
+            /* Mobile-first responsive styles */
+            @media (max-width: 768px) {
+                .container-fluid { padding: 0.5rem !important; }
+                .card { margin-bottom: 0.75rem !important; }
+                .card-body { padding: 0.75rem !important; }
+                h1 { font-size: 1.5rem !important; margin-bottom: 1rem !important; }
+                h5 { font-size: 1rem !important; }
+                h6 { font-size: 0.9rem !important; }
+                .btn { font-size: 0.875rem !important; padding: 0.375rem 0.75rem !important; }
+                .form-control, .form-select { font-size: 0.875rem !important; }
+                /* Chart containers */
+                .js-plotly-plot { margin: 0 !important; }
+                /* Responsive text */
+                p { font-size: 0.875rem !important; margin-bottom: 0.5rem !important; }
+                /* Hide less critical elements on very small screens */
+                @media (max-width: 480px) {
+                    .d-none-xs { display: none !important; }
+                }
+            }
+            /* Touch-friendly interactions */
+            .dropdown-menu { font-size: 0.9rem; }
+            .dropdown-item { padding: 0.5rem 1rem; }
+            /* Plotly mobile optimizations */
+            .modebar { display: none !important; }
+            .plotly .modebar { display: none !important; }
+        </style>
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
 
 # Fetch data on startup
 print("Initializing dashboard...")
@@ -21,14 +73,14 @@ else:
 
 # Define the layout
 app.layout = dbc.Container([
-    # Header
+    # Header - Mobile optimized
     dbc.Row([
         dbc.Col([
-            html.H1("📈 Stock Market Analysis Dashboard", 
-                   className="text-center mb-4",
-                   style={'color': '#2c3e50', 'fontWeight': 'bold'})
+            html.H1("📈 Stock Market Analysis", 
+                   className="text-center mb-3 mb-md-4",
+                   style={'color': '#2c3e50', 'fontWeight': 'bold', 'fontSize': 'clamp(1.25rem, 4vw, 2rem)'})
         ])
-    ]),
+    ], className="mb-2 mb-md-3"),
     
     # Control Panel
     dbc.Row([

@@ -185,21 +185,23 @@ class StockAnalyzer:
             title=dict(
                 text="Stock Price Time Series Analysis",
                 x=0.5,
-                font=dict(size=20)
+                font=dict(size=16)
             ),
             xaxis_title="Date",
             yaxis_title=y_title,
             hovermode='x unified',
             template='plotly_white',
-            height=600,
+            height=500,  # Reduced height for mobile
             showlegend=True,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
                 y=1.02,
                 xanchor="right",
-                x=1
-            )
+                x=1,
+                font=dict(size=10)  # Smaller legend font
+            ),
+            margin=dict(l=40, r=40, t=60, b=40)  # Tighter margins
         )
         
         # Add range selector buttons
@@ -241,10 +243,11 @@ class StockAnalyzer:
             title=dict(
                 text="Stock Correlation Matrix",
                 x=0.5,
-                font=dict(size=18)
+                font=dict(size=14)
             ),
-            height=500,
-            template='plotly_white'
+            height=400,  # Reduced height for mobile
+            template='plotly_white',
+            margin=dict(l=40, r=40, t=50, b=40)
         )
         
         return fig
@@ -284,21 +287,22 @@ class StockAnalyzer:
         
         fig.update_layout(
             title=dict(
-                text="Risk-Adjusted Return Analysis (Sharpe Ratio Optimization)",
+                text="Risk-Adjusted Return Analysis",
                 x=0.5,
-                font=dict(size=18)
+                font=dict(size=14)
             ),
-            xaxis_title="Annualized Volatility (%)",
-            yaxis_title="Annualized Return (%)",
+            xaxis_title="Volatility (%)",
+            yaxis_title="Return (%)",
             template='plotly_white',
-            height=500,
+            height=400,  # Reduced height for mobile
+            margin=dict(l=40, r=40, t=50, b=40),
             annotations=[
                 dict(
-                    text="Bubble size = |Sharpe Ratio|",
+                    text="Size = Sharpe Ratio",
                     xref="paper", yref="paper",
                     x=0.02, y=0.98,
                     showarrow=False,
-                    font=dict(size=10)
+                    font=dict(size=9)
                 )
             ]
         )
@@ -359,9 +363,11 @@ class StockAnalyzer:
         )
         
         fig.update_layout(
-            title_text="Comprehensive Risk Metrics Dashboard",
+            title_text="Risk Metrics Dashboard",
+            title_font_size=14,
             showlegend=False,
-            height=600
+            height=500,  # Reduced height for mobile
+            margin=dict(l=40, r=40, t=50, b=40)
         )
         
         # Rotate x-axis labels
