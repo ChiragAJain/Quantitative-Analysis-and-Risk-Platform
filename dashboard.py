@@ -12,90 +12,46 @@ analyzer = StockAnalyzer()
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Stock Market Analysis Dashboard"
 
-# Add mobile-optimized meta tags
-app.index_string = '''
-<!DOCTYPE html>
+# Mobile optimization through external CSS
+app.index_string = '''<!DOCTYPE html>
 <html>
-    <head>
-        {%metas%}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-        <style>
-            @media (max-width: 768px) {
-                .container-fluid { padding: 0.75rem !important; }
-                .card { margin-bottom: 1.5rem !important; }
-                .card-body { padding: 1rem !important; }
-                h1 { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; }
-                h5 { font-size: 1rem !important; }
-                h6 { font-size: 0.9rem !important; }
-                .btn { font-size: 0.875rem !important; padding: 0.375rem 0.75rem !important; }
-                .form-control, .form-select { font-size: 0.875rem !important; }
-                .js-plotly-plot { 
-                    margin: 1rem 0 !important; 
-                    min-height: 400px !important;
-                }
-                .row { margin-bottom: 1.5rem !important; }
-                p { font-size: 0.875rem !important; margin-bottom: 0.5rem !important; }
-            }
-            @media (max-width: 480px) {
-                .d-none-xs { display: none !important; }
-                .js-plotly-plot { min-height: 350px !important; }
-            }
-            .dropdown-menu { font-size: 0.9rem; }
-            .dropdown-item { padding: 0.5rem 1rem; }
-            .modebar { display: none !important; }
-            .plotly .modebar { display: none !important; }
-            .mobile-dashboard {
-                min-height: 100vh;
-                background-color: #f8f9fa;
-            }
-            @media (max-width: 768px) {
-                .mobile-dashboard {
-                    padding: 0;
-                    background-color: #ffffff;
-                }
-                .js-plotly-plot .plotly {
-                    margin: 1rem 0 2rem 0 !important;
-                }
-                .card + .card {
-                    margin-top: 1.5rem !important;
-                }
-                .container-fluid > .row {
-                    margin-bottom: 2rem !important;
-                }
-                .container-fluid > .row:last-child {
-                    margin-bottom: 1rem !important;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-    </body>
-</html>
-'''
+<head>
+{%metas%}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{%title%}</title>
+{%favicon%}
+{%css%}
+<style>
+.mobile-dashboard { min-height: 100vh; }
+.modebar { display: none !important; }
+@media (max-width: 768px) {
+.container-fluid { padding: 0.75rem !important; }
+.card { margin-bottom: 1.5rem !important; }
+.js-plotly-plot { margin: 1rem 0 !important; min-height: 400px !important; }
+h1 { font-size: 1.5rem !important; }
+}
+</style>
+</head>
+<body>
+{%app_entry%}
+<footer>{%config%}{%scripts%}{%renderer%}</footer>
+</body>
+</html>'''
 
-# Fetch data on startup
+# Fetch data on startup with error handling
 print("Initializing dashboard...")
-if analyzer.fetch_stock_data(period='2y'):
-    print("✓ Data loaded successfully!")
-else:
-    print("✗ Failed to load data")
+try:
+    if analyzer.fetch_stock_data(period='2y'):
+        print("✓ Data loaded successfully!")
+    else:
+        print("⚠️ Some data failed to load, continuing with available data")
+except Exception as e:
+    print(f"⚠️ Data loading error: {e}")
+    print("Dashboard will continue with limited functionality")
 
 # Define the layout
-app.layout = html.Div([
-    dbc.Container([
-    # Header - Mobile optimized
+app.layout = dbc.Container([
+    # Header
     dbc.Row([
         dbc.Col([
             html.H1("📈 Stock Market Analysis", 
@@ -205,8 +161,7 @@ app.layout = html.Div([
         ])
     ])
     
-], fluid=True)
-], className="mobile-dashboard")
+], fluid=True, className="mobile-dashboard")
 
 @app.callback(
     Output('time-series-chart', 'figure'),
