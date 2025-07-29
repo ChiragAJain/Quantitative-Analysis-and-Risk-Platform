@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: stock-market-dashboard
+    env: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn --config gunicorn.conf.py dashboard:server
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: DEBUG
+        value: false
+      - key: WEB_CONCURRENCY
+        value: 1
+    healthCheckPath: /
+    autoDeploy: true
