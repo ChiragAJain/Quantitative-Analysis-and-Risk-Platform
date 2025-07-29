@@ -160,7 +160,7 @@ class StockAnalyzer:
             yaxis_title=y_title,
             hovermode='x unified',
             template='plotly_white',
-            height=500,  # Reduced height for mobile
+            height=450,  # Mobile-optimized height
             showlegend=True,
             legend=dict(
                 orientation="h",
@@ -211,9 +211,9 @@ class StockAnalyzer:
                 x=0.5,
                 font=dict(size=14)
             ),
-            height=400,  # Reduced height for mobile
+            height=380,  # Mobile-optimized height
             template='plotly_white',
-            margin=dict(l=40, r=40, t=50, b=40)
+            margin=dict(l=50, r=50, t=60, b=50)
         )
         return fig
     
@@ -256,8 +256,8 @@ class StockAnalyzer:
             xaxis_title="Volatility (%)",
             yaxis_title="Return (%)",
             template='plotly_white',
-            height=400,  # Reduced height for mobile
-            margin=dict(l=40, r=40, t=50, b=40),
+            height=420,  # Mobile-optimized height
+            margin=dict(l=50, r=50, t=60, b=50),
             annotations=[
                 dict(
                     text="Size = Sharpe Ratio",
@@ -326,8 +326,8 @@ class StockAnalyzer:
             title_text="Risk Metrics Dashboard",
             title_font_size=14,
             showlegend=False,
-            height=500,  # Reduced height for mobile
-            margin=dict(l=40, r=40, t=50, b=40)
+            height=480,  # Mobile-optimized height
+            margin=dict(l=50, r=50, t=60, b=50)
         )
         
         # Rotate x-axis labels

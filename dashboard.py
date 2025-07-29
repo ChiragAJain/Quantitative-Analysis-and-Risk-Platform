@@ -28,21 +28,27 @@ app.index_string = '''
         <style>
             /* Mobile-first responsive styles */
             @media (max-width: 768px) {
-                .container-fluid { padding: 0.5rem !important; }
-                .card { margin-bottom: 0.75rem !important; }
-                .card-body { padding: 0.75rem !important; }
-                h1 { font-size: 1.5rem !important; margin-bottom: 1rem !important; }
+                .container-fluid { padding: 0.75rem !important; }
+                .card { margin-bottom: 1.5rem !important; }
+                .card-body { padding: 1rem !important; }
+                h1 { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; }
                 h5 { font-size: 1rem !important; }
                 h6 { font-size: 0.9rem !important; }
                 .btn { font-size: 0.875rem !important; padding: 0.375rem 0.75rem !important; }
                 .form-control, .form-select { font-size: 0.875rem !important; }
-                /* Chart containers */
-                .js-plotly-plot { margin: 0 !important; }
+                /* Chart containers with proper spacing */
+                .js-plotly-plot { 
+                    margin: 1rem 0 !important; 
+                    min-height: 400px !important;
+                }
+                /* Row spacing for mobile */
+                .row { margin-bottom: 1.5rem !important; }
                 /* Responsive text */
                 p { font-size: 0.875rem !important; margin-bottom: 0.5rem !important; }
                 /* Hide less critical elements on very small screens */
                 @media (max-width: 480px) {
                     .d-none-xs { display: none !important; }
+                    .js-plotly-plot { min-height: 350px !important; }
                 }
             }
             /* Touch-friendly interactions */
@@ -51,6 +57,38 @@ app.index_string = '''
             /* Plotly mobile optimizations */
             .modebar { display: none !important; }
             .plotly .modebar { display: none !important; }
+            
+            /* Mobile dashboard wrapper */
+            .mobile-dashboard {
+                min-height: 100vh;
+                background-color: #f8f9fa;
+            }
+            
+            @media (max-width: 768px) {
+                .mobile-dashboard {
+                    padding: 0;
+                    background-color: #ffffff;
+                }
+                
+                /* Better chart spacing on mobile */
+                .js-plotly-plot .plotly {
+                    margin: 1rem 0 2rem 0 !important;
+                }
+                
+                /* Improve card spacing */
+                .card + .card {
+                    margin-top: 1.5rem !important;
+                }
+                
+                /* Better row spacing */
+                .container-fluid > .row {
+                    margin-bottom: 2rem !important;
+                }
+                
+                .container-fluid > .row:last-child {
+                    margin-bottom: 1rem !important;
+                }
+            }
         </style>
     </head>
     <body>
@@ -72,7 +110,8 @@ else:
     print("✗ Failed to load data")
 
 # Define the layout
-app.layout = dbc.Container([
+app.layout = html.Div([
+    dbc.Container([
     # Header - Mobile optimized
     dbc.Row([
         dbc.Col([
@@ -82,15 +121,15 @@ app.layout = dbc.Container([
         ])
     ], className="mb-2 mb-md-3"),
     
-    # Control Panel
+    # Control Panel - Mobile responsive
     dbc.Row([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H5("Dashboard Controls", className="card-title"),
+                    html.H5("Dashboard Controls", className="card-title mb-3"),
                     dbc.Row([
                         dbc.Col([
-                            html.Label("Chart Type:", className="fw-bold"),
+                            html.Label("Chart Type:", className="fw-bold mb-2"),
                             dcc.Dropdown(
                                 id='chart-type-dropdown',
                                 options=[
@@ -98,55 +137,83 @@ app.layout = dbc.Container([
                                     {'label': 'Actual Prices', 'value': 'actual'}
                                 ],
                                 value='normalized',
-                                clearable=False
+                                clearable=False,
+                                style={'fontSize': '0.9rem'}
                             )
-                        ], width=6),
+                        ], width=12, md=6, className="mb-3 mb-md-0"),
                         dbc.Col([
-                            html.Label("Select Stocks:", className="fw-bold"),
+                            html.Label("Select Stocks:", className="fw-bold mb-2"),
                             dcc.Dropdown(
                                 id='stock-selector',
                                 options=[{'label': name, 'value': name} 
                                         for name in analyzer.major_stocks.keys()],
                                 value=list(analyzer.major_stocks.keys()),
-                                multi=True
+                                multi=True,
+                                style={'fontSize': '0.9rem'}
                             )
-                        ], width=6)
+                        ], width=12, md=6)
                     ])
                 ])
-            ], className="mb-4")
+            ], className="mb-3 mb-md-4")
         ])
     ]),
     
-    # Main Charts Row
+    # Main Charts Row - Mobile optimized
     dbc.Row([
         dbc.Col([
-            dcc.Graph(id='time-series-chart')
+            dcc.Graph(
+                id='time-series-chart',
+                config={
+                    'displayModeBar': False,  # Hide toolbar on mobile
+                    'responsive': True,
+                    'toImageButtonOptions': {'format': 'png', 'filename': 'stock_analysis'},
+                    'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d']
+                }
+            )
         ], width=12)
-    ], className="mb-4"),
+    ], className="mb-4 mb-md-5"),
     
-    # Secondary Charts Row
+    # Secondary Charts Row - Mobile stacked with spacing
     dbc.Row([
         dbc.Col([
-            dcc.Graph(id='correlation-heatmap')
-        ], width=6),
+            dcc.Graph(
+                id='correlation-heatmap',
+                config={
+                    'displayModeBar': False,
+                    'responsive': True
+                }
+            )
+        ], width=12, lg=6, className="mb-4 mb-lg-0"),
         dbc.Col([
-            dcc.Graph(id='volatility-chart')
-        ], width=6)
-    ], className="mb-4"),
+            dcc.Graph(
+                id='volatility-chart',
+                config={
+                    'displayModeBar': False,
+                    'responsive': True
+                }
+            )
+        ], width=12, lg=6)
+    ], className="mb-4 mb-md-5"),
     
-    # Performance Metrics Row
+    # Performance Metrics Row - Mobile optimized
     dbc.Row([
         dbc.Col([
-            dcc.Graph(id='performance-metrics-chart')
+            dcc.Graph(
+                id='performance-metrics-chart',
+                config={
+                    'displayModeBar': False,
+                    'responsive': True
+                }
+            )
         ], width=12)
-    ], className="mb-4"),
+    ], className="mb-4 mb-md-5"),
     
-    # Portfolio Summary Row
+    # Portfolio Summary Row - Mobile responsive
     dbc.Row([
         dbc.Col([
             html.Div(id='portfolio-summary')
         ], width=12)
-    ], className="mb-4"),
+    ], className="mb-3 mb-md-4"),
     
     # Summary Statistics
     dbc.Row([
@@ -156,6 +223,7 @@ app.layout = dbc.Container([
     ])
     
 ], fluid=True)
+], className="mobile-dashboard")
 
 @app.callback(
     Output('time-series-chart', 'figure'),
@@ -278,16 +346,11 @@ def update_performance_metrics(selected_stocks):
 def update_portfolio_summary(selected_stocks):
     if not selected_stocks or len(selected_stocks) < 2:
         return html.Div()
-    
-    # Filter data for selected stocks
+
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Get portfolio summary
     portfolio_summary = analyzer.get_portfolio_summary()
     pm = portfolio_summary['portfolio_metrics']
     
@@ -301,29 +364,29 @@ def update_portfolio_summary(selected_stocks):
         dbc.CardBody([
             dbc.Row([
                 dbc.Col([
-                    html.H6("Return Metrics", className="text-primary"),
-                    html.P(f"Portfolio Return: {pm['portfolio_return']:.1f}% (annualized)"),
-                    html.P(f"Portfolio Volatility: {pm['portfolio_volatility']:.1f}%"),
-                    html.P(f"Sharpe Ratio: {pm['portfolio_sharpe']:.2f}"),
-                ], width=3),
+                    html.H6("Return Metrics", className="text-primary mb-2"),
+                    html.P(f"Portfolio Return: {pm['portfolio_return']:.1f}%", className="mb-1"),
+                    html.P(f"Portfolio Volatility: {pm['portfolio_volatility']:.1f}%", className="mb-1"),
+                    html.P(f"Sharpe Ratio: {pm['portfolio_sharpe']:.2f}", className="mb-2 mb-md-0"),
+                ], width=12, md=6, lg=3, className="mb-3 mb-lg-0"),
                 dbc.Col([
-                    html.H6("Risk Metrics", className="text-danger"),
-                    html.P(f"Value at Risk (95%): {pm['portfolio_var']:.1f}%"),
-                    html.P(f"Maximum Drawdown: {pm['portfolio_max_drawdown']:.1f}%"),
-                    html.P(f"Diversification Ratio: {pm['diversification_ratio']:.2f}"),
-                ], width=3),
+                    html.H6("Risk Metrics", className="text-danger mb-2"),
+                    html.P(f"VaR (95%): {pm['portfolio_var']:.1f}%", className="mb-1"),
+                    html.P(f"Max Drawdown: {pm['portfolio_max_drawdown']:.1f}%", className="mb-1"),
+                    html.P(f"Diversification: {pm['diversification_ratio']:.2f}", className="mb-2 mb-md-0"),
+                ], width=12, md=6, lg=3, className="mb-3 mb-lg-0"),
                 dbc.Col([
-                    html.H6("Portfolio Composition", className="text-info"),
-                    html.P(f"Number of Securities: {portfolio_summary['portfolio_size']}"),
-                    html.P(f"Average Correlation: {portfolio_summary['avg_correlation']:.3f}"),
-                    html.P(f"Total Data Points: {portfolio_summary['total_observations']:,}"),
-                ], width=3),
+                    html.H6("Portfolio Info", className="text-info mb-2"),
+                    html.P(f"Securities: {portfolio_summary['portfolio_size']}", className="mb-1"),
+                    html.P(f"Avg Correlation: {portfolio_summary['avg_correlation']:.3f}", className="mb-1"),
+                    html.P(f"Data Points: {portfolio_summary['total_observations']:,}", className="mb-2 mb-md-0"),
+                ], width=12, md=6, lg=3, className="mb-3 mb-lg-0"),
                 dbc.Col([
-                    html.H6("Analysis Parameters", className="text-success"),
-                    html.P(f"Trading Days: {portfolio_summary['data_points']:,}"),
-                    html.P(f"Analysis Period: {portfolio_summary['data_points']/252:.1f} years"),
-                    html.P(f"Risk-Free Rate: {analyzer.get_current_risk_free_rate():.2%}"),
-                ], width=3)
+                    html.H6("Analysis Period", className="text-success mb-2"),
+                    html.P(f"Trading Days: {portfolio_summary['data_points']:,}", className="mb-1"),
+                    html.P(f"Time Period: {portfolio_summary['data_points']/252:.1f} years", className="mb-1"),
+                    html.P(f"Risk-Free Rate: {analyzer.get_current_risk_free_rate():.2%}", className="mb-0"),
+                ], width=12, md=6, lg=3)
             ])
         ])
     ])
@@ -337,14 +400,10 @@ def update_summary_stats(selected_stocks):
         return html.Div("Please select stocks to view summary statistics")
     
     summary = analyzer.get_stock_summary()
-    
-    # Create cards for each selected stock
     cards = []
     for stock in selected_stocks:
         if stock in summary:
             data = summary[stock]
-            
-            # Determine color based on return
             return_color = "success" if data['total_return'] > 0 else "danger"
             sharpe_color = "success" if data['sharpe_ratio'] > 1 else "warning" if data['sharpe_ratio'] > 0.5 else "danger"
             
@@ -394,7 +453,7 @@ def update_summary_stats(selected_stocks):
                         ], className="mb-0")
                     ])
                 ], className="h-100")
-            ], width=12//min(len(selected_stocks), 3))
+            ], width=12, md=6, lg=4, xl=12//min(len(selected_stocks), 4), className="mb-3 mb-lg-0")
             
             cards.append(card)
     
@@ -406,16 +465,12 @@ def update_summary_stats(selected_stocks):
             dbc.Row(cards)
         ])
     ])
-
-# Expose server for deployment
 server = app.server
 
 if __name__ == '__main__':
     import os
     
     print("\n🚀 Starting Stock Market Analysis Dashboard...")
-    
-    # Get port from environment variable (for deployment) or use default
     port = int(os.environ.get('PORT', 8050))
     host = os.environ.get('HOST', '0.0.0.0')
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
