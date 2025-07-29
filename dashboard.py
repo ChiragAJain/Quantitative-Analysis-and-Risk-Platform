@@ -49,9 +49,8 @@ except Exception as e:
     print(f"⚠️ Data loading error: {e}")
     print("Dashboard will continue with limited functionality")
 
-# Define the layout
+#Template layout
 app.layout = dbc.Container([
-    # Header
     dbc.Row([
         dbc.Col([
             html.H1("📈 Stock Market Analysis", 
@@ -59,8 +58,6 @@ app.layout = dbc.Container([
                    style={'color': '#2c3e50', 'fontWeight': 'bold', 'fontSize': 'clamp(1.25rem, 4vw, 2rem)'})
         ])
     ], className="mb-2 mb-md-3"),
-    
-    # Control Panel - Mobile responsive
     dbc.Row([
         dbc.Col([
             dbc.Card([
@@ -96,14 +93,12 @@ app.layout = dbc.Container([
             ], className="mb-3 mb-md-4")
         ])
     ]),
-    
-    # Main Charts Row - Mobile optimized
     dbc.Row([
         dbc.Col([
             dcc.Graph(
                 id='time-series-chart',
                 config={
-                    'displayModeBar': False,  # Hide toolbar on mobile
+                    'displayModeBar': False, 
                     'responsive': True,
                     'toImageButtonOptions': {'format': 'png', 'filename': 'stock_analysis'},
                     'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d']
@@ -111,8 +106,6 @@ app.layout = dbc.Container([
             )
         ], width=12)
     ], className="mb-4 mb-md-5"),
-    
-    # Secondary Charts Row - Mobile stacked with spacing
     dbc.Row([
         dbc.Col([
             dcc.Graph(
@@ -133,8 +126,6 @@ app.layout = dbc.Container([
             )
         ], width=12, lg=6)
     ], className="mb-4 mb-md-5"),
-    
-    # Performance Metrics Row - Mobile optimized
     dbc.Row([
         dbc.Col([
             dcc.Graph(
@@ -146,15 +137,12 @@ app.layout = dbc.Container([
             )
         ], width=12)
     ], className="mb-4 mb-md-5"),
-    
-    # Portfolio Summary Row - Mobile responsive
+
     dbc.Row([
         dbc.Col([
             html.Div(id='portfolio-summary')
         ], width=12)
     ], className="mb-3 mb-md-4"),
-    
-    # Summary Statistics
     dbc.Row([
         dbc.Col([
             html.Div(id='summary-stats')
@@ -175,20 +163,13 @@ def update_time_series(chart_type, selected_stocks):
             xref="paper", yref="paper",
             x=0.5, y=0.5, showarrow=False
         )
-    
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create chart
     normalize = chart_type == 'normalized'
     fig = analyzer.create_time_series_chart(normalize=normalize)
-    
-    # Restore original data
     analyzer.stock_data = original_data
     
     return fig
@@ -208,15 +189,10 @@ def update_correlation_heatmap(selected_stocks):
     # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create heatmap
     fig = analyzer.create_correlation_heatmap()
-    
-    # Restore original data
     analyzer.stock_data = original_data
     
     return fig
@@ -232,19 +208,13 @@ def update_volatility_chart(selected_stocks):
             xref="paper", yref="paper",
             x=0.5, y=0.5, showarrow=False
         )
-    
-    # Filter data for selected stocks
+ 
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create volatility chart
     fig = analyzer.create_volatility_chart()
-    
-    # Restore original data
     analyzer.stock_data = original_data
     
     return fig
@@ -260,19 +230,11 @@ def update_performance_metrics(selected_stocks):
             xref="paper", yref="paper",
             x=0.5, y=0.5, showarrow=False
         )
-    
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create performance metrics chart
     fig = analyzer.create_performance_metrics_chart()
-    
-    # Restore original data
     analyzer.stock_data = original_data
     
     return fig
@@ -291,8 +253,6 @@ def update_portfolio_summary(selected_stocks):
     analyzer.stock_data = filtered_data
     portfolio_summary = analyzer.get_portfolio_summary()
     pm = portfolio_summary['portfolio_metrics']
-    
-    # Restore original data
     analyzer.stock_data = original_data
     
     return dbc.Card([
@@ -322,7 +282,7 @@ def update_portfolio_summary(selected_stocks):
                 dbc.Col([
                     html.H6("Analysis Period", className="text-success mb-2"),
                     html.P(f"Trading Days: {portfolio_summary['data_points']:,}", className="mb-1"),
-                    html.P(f"Time Period: {portfolio_summary['data_points']/252:.1f} years", className="mb-1"),
+                    html.P(f"Time Period: {portfolio_summary['data_points']/250:.1f} years", className="mb-1"),
                     html.P(f"Risk-Free Rate: {analyzer.get_current_risk_free_rate():.2%}", className="mb-0"),
                 ], width=12, md=6, lg=3)
             ])
@@ -408,7 +368,7 @@ server = app.server
 if __name__ == '__main__':
     import os
     
-    print("\n🚀 Starting Stock Market Analysis Dashboard...")
+    print("\nStarting Stock Market Analysis Dashboard...")
     port = int(os.environ.get('PORT', 8050))
     host = os.environ.get('HOST', '0.0.0.0')
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
