@@ -52,8 +52,6 @@ A comprehensive, production-ready web application for quantitative equity analys
 3. **Auto-Deploy**: Render detects `render.yaml` and deploys automatically
 4. **Live in 5-10 minutes**: Your dashboard will be available at `https://your-app-name.onrender.com`
 
-*Detailed deployment guide: [RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)*
-
 ## 🛠️ Local Development
 
 ### **Prerequisites**
