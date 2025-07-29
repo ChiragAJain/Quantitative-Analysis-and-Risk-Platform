@@ -12,16 +12,14 @@ analyzer = StockAnalyzer()
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Stock Market Analysis Dashboard"
 
-# Fetch data on startup
 print("Initializing dashboard...")
 if analyzer.fetch_stock_data(period='2y'):
-    print("✓ Data loaded successfully!")
+    print("Data loaded successfully!")
 else:
-    print("✗ Failed to load data")
+    print("Failed to load data")
 
-# Define the layout
+# Template Layout
 app.layout = dbc.Container([
-    # Header
     dbc.Row([
         dbc.Col([
             html.H1("📈 Stock Market Analysis Dashboard", 
@@ -29,8 +27,6 @@ app.layout = dbc.Container([
                    style={'color': '#2c3e50', 'fontWeight': 'bold'})
         ])
     ]),
-    
-    # Control Panel
     dbc.Row([
         dbc.Col([
             dbc.Card([
@@ -65,14 +61,13 @@ app.layout = dbc.Container([
         ])
     ]),
     
-    # Main Charts Row
     dbc.Row([
         dbc.Col([
             dcc.Graph(id='time-series-chart')
         ], width=12)
     ], className="mb-4"),
-    
-    # Secondary Charts Row
+
+    #Stocks Performance Analysis
     dbc.Row([
         dbc.Col([
             dcc.Graph(id='correlation-heatmap')
@@ -118,23 +113,16 @@ def update_time_series(chart_type, selected_stocks):
             x=0.5, y=0.5, showarrow=False
         )
     
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create chart
     normalize = chart_type == 'normalized'
     fig = analyzer.create_time_series_chart(normalize=normalize)
-    
-    # Restore original data
     analyzer.stock_data = original_data
-    
     return fig
-
+    
 @app.callback(
     Output('correlation-heatmap', 'figure'),
     [Input('stock-selector', 'value')]
@@ -146,21 +134,12 @@ def update_correlation_heatmap(selected_stocks):
             xref="paper", yref="paper",
             x=0.5, y=0.5, showarrow=False
         )
-    
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create heatmap
     fig = analyzer.create_correlation_heatmap()
-    
-    # Restore original data
     analyzer.stock_data = original_data
-    
     return fig
 
 @app.callback(
@@ -174,21 +153,12 @@ def update_volatility_chart(selected_stocks):
             xref="paper", yref="paper",
             x=0.5, y=0.5, showarrow=False
         )
-    
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create volatility chart
     fig = analyzer.create_volatility_chart()
-    
-    # Restore original data
     analyzer.stock_data = original_data
-    
     return fig
 
 @app.callback(
@@ -202,21 +172,12 @@ def update_performance_metrics(selected_stocks):
             xref="paper", yref="paper",
             x=0.5, y=0.5, showarrow=False
         )
-    
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Create performance metrics chart
     fig = analyzer.create_performance_metrics_chart()
-    
-    # Restore original data
     analyzer.stock_data = original_data
-    
     return fig
 
 @app.callback(
@@ -226,22 +187,14 @@ def update_performance_metrics(selected_stocks):
 def update_portfolio_summary(selected_stocks):
     if not selected_stocks or len(selected_stocks) < 2:
         return html.Div()
-    
-    # Filter data for selected stocks
     filtered_data = {name: data for name, data in analyzer.stock_data.items() 
                     if name in selected_stocks}
-    
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
-    
-    # Get portfolio summary
     portfolio_summary = analyzer.get_portfolio_summary()
     pm = portfolio_summary['portfolio_metrics']
-    
-    # Restore original data
     analyzer.stock_data = original_data
-    
     return dbc.Card([
         dbc.CardHeader([
             html.H5("🏦 Portfolio-Level Analysis (Equal-Weighted)", className="mb-0")
@@ -285,14 +238,11 @@ def update_summary_stats(selected_stocks):
         return html.Div("Please select stocks to view summary statistics")
     
     summary = analyzer.get_stock_summary()
-    
-    # Create cards for each selected stock
+    #Stock cards
     cards = []
     for stock in selected_stocks:
         if stock in summary:
             data = summary[stock]
-            
-            # Determine color based on return
             return_color = "success" if data['total_return'] > 0 else "danger"
             sharpe_color = "success" if data['sharpe_ratio'] > 1 else "warning" if data['sharpe_ratio'] > 0.5 else "danger"
             
@@ -354,20 +304,14 @@ def update_summary_stats(selected_stocks):
             dbc.Row(cards)
         ])
     ])
-
-# Expose server for deployment
 server = app.server
 
 if __name__ == '__main__':
     import os
-    
-    print("\n🚀 Starting Stock Market Analysis Dashboard...")
-    
-    # Get port from environment variable (for deployment) or use default
+    print("\nStarting Stock Market Analysis Dashboard...")
     port = int(os.environ.get('PORT', 8050))
     host = os.environ.get('HOST', '0.0.0.0')
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    
     if not debug:
         print(f"📊 Dashboard will be available at: http://{host}:{port}")
         print("\nFeatures available:")
@@ -381,7 +325,6 @@ if __name__ == '__main__':
     try:
         app.run_server(debug=debug, host=host, port=port)
     except Exception as e:
-        print(f"❌ Error starting server: {e}")
+        print(f"Error starting server: {e}")
         if not debug:
-            # In production, try to start with basic configuration
             app.run_server(debug=False, host='0.0.0.0', port=port)
