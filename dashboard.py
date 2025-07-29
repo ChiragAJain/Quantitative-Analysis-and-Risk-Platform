@@ -5,15 +5,15 @@ import plotly.graph_objects as go
 from stock_analyzer import StockAnalyzer
 import pandas as pd
 
-# Initialize the stock analyzer
+
 analyzer = StockAnalyzer()
 
-# Initialize Dash app with Bootstrap theme and mobile optimization
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Stock Market Analysis Dashboard"
 
-# Add mobile-optimized meta tags
-app.index_string = '''
+
+app.index_string =
 <!DOCTYPE html>
 <html>
     <head>
@@ -37,8 +37,8 @@ app.index_string = '''
                 .btn { font-size: 0.875rem !important; padding: 0.375rem 0.75rem !important; }
                 .form-control, .form-select { font-size: 0.875rem !important; }
                 /* Chart containers with proper spacing */
-                .js-plotly-plot { 
-                    margin: 1rem 0 !important; 
+                .js-plotly-plot {
+                    margin: 1rem 0 !important;
                     min-height: 400px !important;
                 }
                 /* Row spacing for mobile */
@@ -61,13 +61,13 @@ app.index_string = '''
             /* Mobile dashboard wrapper */
             .mobile-dashboard {
                 min-height: 100vh;
-                background-color: #f8f9fa;
+                background-color:
             }
             
             @media (max-width: 768px) {
                 .mobile-dashboard {
                     padding: 0;
-                    background-color: #ffffff;
+                    background-color:
                 }
                 
                 /* Better chart spacing on mobile */
@@ -100,28 +100,28 @@ app.index_string = '''
         </footer>
     </body>
 </html>
-'''
 
-# Fetch data on startup
+
+
 print("Initializing dashboard...")
 if analyzer.fetch_stock_data(period='2y'):
     print("✓ Data loaded successfully!")
 else:
     print("✗ Failed to load data")
 
-# Define the layout
+
 app.layout = html.Div([
     dbc.Container([
-    # Header - Mobile optimized
+
     dbc.Row([
         dbc.Col([
-            html.H1("📈 Stock Market Analysis", 
+            html.H1("📈 Stock Market Analysis",
                    className="text-center mb-3 mb-md-4",
                    style={'color': '#2c3e50', 'fontWeight': 'bold', 'fontSize': 'clamp(1.25rem, 4vw, 2rem)'})
         ])
     ], className="mb-2 mb-md-3"),
     
-    # Control Panel - Mobile responsive
+
     dbc.Row([
         dbc.Col([
             dbc.Card([
@@ -145,7 +145,7 @@ app.layout = html.Div([
                             html.Label("Select Stocks:", className="fw-bold mb-2"),
                             dcc.Dropdown(
                                 id='stock-selector',
-                                options=[{'label': name, 'value': name} 
+                                options=[{'label': name, 'value': name}
                                         for name in analyzer.major_stocks.keys()],
                                 value=list(analyzer.major_stocks.keys()),
                                 multi=True,
@@ -158,13 +158,13 @@ app.layout = html.Div([
         ])
     ]),
     
-    # Main Charts Row - Mobile optimized
+
     dbc.Row([
         dbc.Col([
             dcc.Graph(
                 id='time-series-chart',
                 config={
-                    'displayModeBar': False,  # Hide toolbar on mobile
+                    'displayModeBar': False,
                     'responsive': True,
                     'toImageButtonOptions': {'format': 'png', 'filename': 'stock_analysis'},
                     'modeBarButtonsToRemove': ['pan2d', 'lasso2d', 'select2d']
@@ -173,7 +173,7 @@ app.layout = html.Div([
         ], width=12)
     ], className="mb-4 mb-md-5"),
     
-    # Secondary Charts Row - Mobile stacked with spacing
+
     dbc.Row([
         dbc.Col([
             dcc.Graph(
@@ -195,7 +195,7 @@ app.layout = html.Div([
         ], width=12, lg=6)
     ], className="mb-4 mb-md-5"),
     
-    # Performance Metrics Row - Mobile optimized
+
     dbc.Row([
         dbc.Col([
             dcc.Graph(
@@ -208,14 +208,14 @@ app.layout = html.Div([
         ], width=12)
     ], className="mb-4 mb-md-5"),
     
-    # Portfolio Summary Row - Mobile responsive
+
     dbc.Row([
         dbc.Col([
             html.Div(id='portfolio-summary')
         ], width=12)
     ], className="mb-3 mb-md-4"),
     
-    # Summary Statistics
+
     dbc.Row([
         dbc.Col([
             html.Div(id='summary-stats')
@@ -238,19 +238,19 @@ def update_time_series(chart_type, selected_stocks):
             x=0.5, y=0.5, showarrow=False
         )
     
-    # Filter data for selected stocks
-    filtered_data = {name: data for name, data in analyzer.stock_data.items() 
+
+    filtered_data = {name: data for name, data in analyzer.stock_data.items()
                     if name in selected_stocks}
     
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
     
-    # Create chart
+
     normalize = chart_type == 'normalized'
     fig = analyzer.create_time_series_chart(normalize=normalize)
     
-    # Restore original data
+
     analyzer.stock_data = original_data
     
     return fig
@@ -267,18 +267,18 @@ def update_correlation_heatmap(selected_stocks):
             x=0.5, y=0.5, showarrow=False
         )
     
-    # Filter data for selected stocks
-    filtered_data = {name: data for name, data in analyzer.stock_data.items() 
+
+    filtered_data = {name: data for name, data in analyzer.stock_data.items()
                     if name in selected_stocks}
     
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
     
-    # Create heatmap
+
     fig = analyzer.create_correlation_heatmap()
     
-    # Restore original data
+
     analyzer.stock_data = original_data
     
     return fig
@@ -295,18 +295,18 @@ def update_volatility_chart(selected_stocks):
             x=0.5, y=0.5, showarrow=False
         )
     
-    # Filter data for selected stocks
-    filtered_data = {name: data for name, data in analyzer.stock_data.items() 
+
+    filtered_data = {name: data for name, data in analyzer.stock_data.items()
                     if name in selected_stocks}
     
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
     
-    # Create volatility chart
+
     fig = analyzer.create_volatility_chart()
     
-    # Restore original data
+
     analyzer.stock_data = original_data
     
     return fig
@@ -323,18 +323,18 @@ def update_performance_metrics(selected_stocks):
             x=0.5, y=0.5, showarrow=False
         )
     
-    # Filter data for selected stocks
-    filtered_data = {name: data for name, data in analyzer.stock_data.items() 
+
+    filtered_data = {name: data for name, data in analyzer.stock_data.items()
                     if name in selected_stocks}
     
-    # Temporarily update analyzer data
+
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
     
-    # Create performance metrics chart
+
     fig = analyzer.create_performance_metrics_chart()
     
-    # Restore original data
+
     analyzer.stock_data = original_data
     
     return fig
@@ -347,14 +347,14 @@ def update_portfolio_summary(selected_stocks):
     if not selected_stocks or len(selected_stocks) < 2:
         return html.Div()
 
-    filtered_data = {name: data for name, data in analyzer.stock_data.items() 
+    filtered_data = {name: data for name, data in analyzer.stock_data.items()
                     if name in selected_stocks}
     original_data = analyzer.stock_data
     analyzer.stock_data = filtered_data
     portfolio_summary = analyzer.get_portfolio_summary()
     pm = portfolio_summary['portfolio_metrics']
     
-    # Restore original data
+
     analyzer.stock_data = original_data
     
     return dbc.Card([
@@ -410,7 +410,7 @@ def update_summary_stats(selected_stocks):
             card = dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H5(f"{stock} ({data['symbol']})", 
+                        html.H5(f"{stock} ({data['symbol']})",
                                className="card-title text-center"),
                         html.Hr(),
                         html.P([
@@ -480,7 +480,7 @@ if __name__ == '__main__':
         print("\nFeatures available:")
         print("• Interactive time series charts with zoom/pan")
         print("• Stock correlation analysis")
-        print("• Risk vs return visualization") 
+        print("• Risk vs return visualization")
         print("• Real-time stock filtering")
         print("• Multiple time period views")
         print("• Advanced portfolio analytics")
@@ -490,5 +490,5 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"❌ Error starting server: {e}")
         if not debug:
-            # In production, try to start with basic configuration
+
             app.run_server(debug=False, host='0.0.0.0', port=port)

@@ -13,7 +13,7 @@ class StockAnalyzer:
     def __init__(self):
         self.major_stocks = {
             'Apple': 'AAPL',
-            'Microsoft': 'MSFT', 
+            'Microsoft': 'MSFT',
             'Google': 'GOOGL',
             'Amazon': 'AMZN',
             'Tesla': 'TSLA',
@@ -55,12 +55,12 @@ class StockAnalyzer:
             treasury = yf.Ticker("^TNX")
             data = treasury.history(period="5d")
             if not data.empty:
-                current_rate = data['Close'].iloc[-1] / 100 
+                current_rate = data['Close'].iloc[-1] / 100
                 print(f"Using current 10Y Treasury rate: {current_rate:.2%}")
                 return current_rate
         except Exception as e:
             print(f"Could not fetch Treasury rate: {e}")
-        fallback_rate = 0.045 
+        fallback_rate = 0.045
         print(f"Using fallback risk-free rate: {fallback_rate:.2%}")
         return fallback_rate
     def calculate_sharpe_ratio(self, returns, risk_free_rate=None):
@@ -106,7 +106,7 @@ class StockAnalyzer:
             if market_returns is not None and len(stock_returns) > 0:
                 aligned_stock = stock_returns.reindex(market_returns.index).dropna()
                 aligned_market = market_returns.reindex(aligned_stock.index).dropna()
-                if len(aligned_stock) > 20:  # Need sufficient data
+                if len(aligned_stock) > 20:
                     beta = self.calculate_beta(aligned_stock, aligned_market)
             annualized_return = ((1 + stock_returns.mean()) ** 250 - 1) * 100
             win_rate = (stock_returns > 0).sum() / len(stock_returns) * 100
@@ -160,7 +160,7 @@ class StockAnalyzer:
             yaxis_title=y_title,
             hovermode='x unified',
             template='plotly_white',
-            height=450,  # Mobile-optimized height
+            height=450,
             showlegend=True,
             legend=dict(
                 orientation="h",
@@ -168,9 +168,9 @@ class StockAnalyzer:
                 y=1.02,
                 xanchor="right",
                 x=1,
-                font=dict(size=10)  # Smaller legend font
+                font=dict(size=10)
             ),
-            margin=dict(l=40, r=40, t=60, b=40)  # Tighter margins
+            margin=dict(l=40, r=40, t=60, b=40)
         )
         fig.update_layout(
             xaxis=dict(
@@ -211,7 +211,7 @@ class StockAnalyzer:
                 x=0.5,
                 font=dict(size=14)
             ),
-            height=380,  # Mobile-optimized height
+            height=380,
             template='plotly_white',
             margin=dict(l=50, r=50, t=60, b=50)
         )
@@ -256,7 +256,7 @@ class StockAnalyzer:
             xaxis_title="Volatility (%)",
             yaxis_title="Return (%)",
             template='plotly_white',
-            height=420,  # Mobile-optimized height
+            height=420,
             margin=dict(l=50, r=50, t=60, b=50),
             annotations=[
                 dict(
@@ -288,34 +288,34 @@ class StockAnalyzer:
         
         fig = make_subplots(
             rows=2, cols=2,
-            subplot_titles=('Sharpe Ratio', 'Maximum Drawdown (%)', 
+            subplot_titles=('Sharpe Ratio', 'Maximum Drawdown (%)',
                           'Value at Risk 95% (%)', 'Win Rate (%)'),
             specs=[[{"secondary_y": False}, {"secondary_y": False}],
                    [{"secondary_y": False}, {"secondary_y": False}]]
         )
         
-        # Sharpe Ratio
+
         fig.add_trace(
             go.Bar(x=df['Stock'], y=df['Sharpe Ratio'], name='Sharpe Ratio',
                    marker_color='lightblue'),
             row=1, col=1
         )
         
-        # Max Drawdown
+
         fig.add_trace(
             go.Bar(x=df['Stock'], y=df['Max Drawdown (%)'], name='Max Drawdown',
                    marker_color='lightcoral'),
             row=1, col=2
         )
         
-        # VaR
+
         fig.add_trace(
             go.Bar(x=df['Stock'], y=df['VaR 95% (%)'], name='VaR 95%',
                    marker_color='lightsalmon'),
             row=2, col=1
         )
         
-        # Win Rate
+
         fig.add_trace(
             go.Bar(x=df['Stock'], y=df['Win Rate (%)'], name='Win Rate',
                    marker_color='lightgreen'),
@@ -326,17 +326,17 @@ class StockAnalyzer:
             title_text="Risk Metrics Dashboard",
             title_font_size=14,
             showlegend=False,
-            height=480,  # Mobile-optimized height
+            height=480,
             margin=dict(l=50, r=50, t=60, b=50)
         )
         
-        # Rotate x-axis labels
+
         fig.update_xaxes(tickangle=45)
         
         return fig
     
     def calculate_portfolio_metrics(self, weights=None):
-        """Calculate portfolio-level metrics with equal or custom weights"""
+
         returns_df = self.calculate_returns()
         
         if weights is None:
@@ -368,7 +368,7 @@ class StockAnalyzer:
         portfolio_metrics = self.calculate_portfolio_metrics()
         individual_summary = self.get_stock_summary()
         returns_df = self.calculate_returns()
-        actual_trading_days = len(returns_df) 
+        actual_trading_days = len(returns_df)
         avg_correlation = self.calculate_correlation_matrix().values[np.triu_indices_from(
             self.calculate_correlation_matrix().values, k=1)].mean()
         return {

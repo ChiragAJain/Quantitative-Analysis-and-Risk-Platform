@@ -8,7 +8,7 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 def preload_data():
-    print("Preloading stock data for faster response times...")    
+    print("Preloading stock data for faster response times...")
     try:
         start_time = time.time()
         success = analyzer.fetch_stock_data(period='2y')
@@ -27,7 +27,7 @@ def preload_data():
         return False
 
 def main():
-    # Register signal handlers
+
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
 
